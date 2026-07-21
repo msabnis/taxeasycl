@@ -1,0 +1,575 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+.app-shell, .app-shell * { box-sizing: border-box; }
+
+.app-shell {
+  --ink: #1C2B3A;
+  --ink-soft: #445164;
+  --paper: #EFEFE6;
+  --paper-raised: #F8F7F1;
+  --brass: #C99A3A;
+  --brass-dark: #A87F2A;
+  --ledger-green: #2E5339;
+  --stamp-red: #A63D2F;
+  --slate: #5B6660;
+  --border: rgba(28,43,58,0.14);
+
+  font-family: 'IBM Plex Sans', sans-serif;
+  color: var(--ink);
+  background: var(--paper);
+  min-height: 100vh;
+  max-width: 920px;
+  margin: 0 auto;
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+}
+
+.app-shell h1, .app-shell h2, .app-shell h3 {
+  font-family: 'Fraunces', serif;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.app-shell .num {
+  font-family: 'IBM Plex Mono', monospace;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-shell button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.app-shell button:focus-visible,
+.app-shell [tabindex]:focus-visible {
+  outline: 2px solid var(--brass-dark);
+  outline-offset: 2px;
+}
+
+/* Top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--border);
+}
+.wordmark {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.wordmark .mark {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  background: var(--brass);
+  display: inline-block;
+}
+.merchant-chip {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 600;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+/* Screens */
+.screen { padding: 32px 28px 56px; }
+.hidden { display: none !important; }
+
+/* Dashboard */
+.greeting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 22px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.greeting-row h1 { font-size: 26px; }
+.greeting-row .date { color: var(--slate); font-size: 14px; }
+
+.status-hero {
+  background: var(--paper-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 24px;
+}
+.status-hero .stamp { color: var(--ledger-green); flex-shrink: 0; }
+.status-hero .status-copy .eyebrow {
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--slate);
+  margin-bottom: 3px;
+}
+.status-hero .status-copy p { margin: 4px 0 0; color: var(--ink-soft); font-size: 14.5px; }
+
+.cards-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 30px;
+}
+.action-card {
+  background: var(--paper-raised);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+.action-card .due {
+  font-size: 12.5px;
+  color: var(--stamp-red);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+.action-card h3 { font-size: 17px; margin-bottom: 10px; }
+.progress-dots { display: flex; gap: 5px; margin-bottom: 14px; }
+.progress-dots span {
+  width: 20px; height: 4px; border-radius: 2px;
+  background: var(--border);
+}
+.progress-dots span.done { background: var(--brass); }
+
+.btn-primary {
+  background: var(--ink);
+  color: var(--paper);
+  border: none;
+  border-radius: 7px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.btn-primary:hover { background: #0F1924; }
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--ink);
+  border-radius: 7px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+}
+.btn-secondary:hover { border-color: var(--ink); }
+.btn-text {
+  background: none; border: none; color: var(--ink-soft);
+  font-size: 13.5px; text-decoration: underline; padding: 0;
+}
+
+.ledger-list h3 { font-size: 14px; color: var(--slate); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 12px; font-family: 'IBM Plex Sans', sans-serif; font-weight: 600; }
+.ledger-row {
+  display: grid;
+  grid-template-columns: 28px 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.ledger-row .idx { color: var(--slate); font-size: 13px; }
+.ledger-row .desc-date { color: var(--slate); font-size: 12.5px; margin-top: 2px; }
+.tag-filed { color: var(--ledger-green); font-size: 12.5px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+.tag-filed .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--ledger-green); }
+
+/* Wizard */
+.wizard-back {
+  background: none; border: none; color: var(--ink-soft);
+  font-size: 13.5px; margin-bottom: 18px; padding: 0;
+  display: flex; align-items: center; gap: 6px;
+}
+.wizard-layout { display: grid; grid-template-columns: 220px 1fr; gap: 40px; }
+.ledger-rail ol { list-style: none; margin: 0; padding: 0; position: relative; }
+.ledger-rail ol::before {
+  content: '';
+  position: absolute;
+  top: 14px; bottom: 14px; left: 13px;
+  width: 2px;
+  background: var(--border);
+}
+.rail-step {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding-bottom: 30px;
+}
+.rail-marker {
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1.5px solid var(--border);
+  background: var(--paper);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 12px; font-weight: 600;
+  color: var(--slate);
+  flex-shrink: 0;
+}
+.rail-label { font-size: 13.5px; color: var(--slate); padding-top: 4px; }
+.rail-step.active .rail-marker { background: var(--brass); border-color: var(--brass); color: var(--ink); }
+.rail-step.active .rail-label { color: var(--ink); font-weight: 600; }
+.rail-step.done .rail-marker { background: var(--ledger-green); border-color: var(--ledger-green); color: var(--paper); }
+.rail-step.done .rail-label { color: var(--ink); }
+
+.step-panel { max-width: 480px; }
+.step-eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--slate); margin-bottom: 8px; }
+.step-panel h2 { font-size: 23px; margin-bottom: 10px; }
+.step-panel .lede { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 22px; }
+
+.choice-card {
+  display: flex; align-items: flex-start; gap: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: 9px;
+  padding: 16px 18px;
+  margin-bottom: 12px;
+  background: var(--paper-raised);
+}
+.choice-card.selected { border-color: var(--brass-dark); background: #FBF3E3; }
+.choice-radio {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 1.5px solid var(--slate);
+  margin-top: 2px; flex-shrink: 0; position: relative;
+}
+.choice-card.selected .choice-radio { border-color: var(--brass-dark); }
+.choice-card.selected .choice-radio::after {
+  content:''; position:absolute; inset: 3px; border-radius:50%; background: var(--brass-dark);
+}
+.choice-title { font-weight: 600; font-size: 14.5px; }
+.choice-sub { font-size: 13px; color: var(--slate); margin-top: 3px; }
+
+.txn-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin-bottom: 8px; }
+.txn-table th { text-align: left; color: var(--slate); font-weight: 500; font-size: 11.5px; text-transform: uppercase; letter-spacing: 0.05em; padding-bottom: 8px; border-bottom: 1px solid var(--border); }
+.txn-table td { padding: 10px 8px 10px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+.txn-table tr:last-child td { border-bottom: none; }
+.txn-flag { background: #FBF3E3; }
+.txn-flag-note { font-size: 12px; color: var(--stamp-red); margin-top: 3px; }
+.txn-amt { text-align: right; }
+
+.vat-figures { margin: 18px 0; }
+.vat-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 14.5px; }
+.vat-row .label-sub { display: block; font-size: 12px; color: var(--slate); margin-top: 2px; font-family: 'IBM Plex Sans', sans-serif; }
+.vat-row.total { border-bottom: none; padding-top: 16px; font-weight: 600; font-size: 17px; }
+.vat-row.total .num { color: var(--ledger-green); }
+
+.step-nav { display: flex; gap: 10px; margin-top: 26px; }
+
+.submitted-view { text-align: center; padding: 20px 0 10px; }
+.submitted-view .stamp-big { color: var(--ledger-green); margin-bottom: 18px; }
+.submitted-view h2 { font-size: 22px; margin-bottom: 8px; }
+.submitted-view p { color: var(--ink-soft); font-size: 14.5px; margin-bottom: 20px; }
+
+@keyframes stampdown {
+  0% { transform: scale(1.6) rotate(-9deg); opacity: 0; }
+  60% { transform: scale(0.94) rotate(-9deg); opacity: 1; }
+  100% { transform: scale(1) rotate(-9deg); opacity: 1; }
+}
+.stamp-animate { animation: stampdown 0.5s ease-out; }
+@media (prefers-reduced-motion: reduce) {
+  .stamp-animate { animation: none; }
+}
+
+@media (max-width: 640px) {
+  .cards-row { grid-template-columns: 1fr; }
+  .wizard-layout { grid-template-columns: 1fr; }
+  .ledger-rail ol { display: flex; overflow-x: auto; gap: 4px; }
+  .ledger-rail ol::before { display: none; }
+  .rail-label { display: none; }
+}
+</style>
+
+<div class="app-shell">
+
+  <div class="topbar">
+    <div class="wordmark"><span class="mark"></span>Ledgerly</div>
+    <div class="merchant-chip">
+      <span>Priya's Bakery</span>
+      <span class="avatar">PB</span>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="screen" id="screen-dashboard">
+    <div class="greeting-row">
+      <h1>Good morning, Priya</h1>
+      <span class="date">Monday, 20 July 2026</span>
+    </div>
+
+    <div class="status-hero">
+      <svg class="stamp" viewBox="0 0 120 120" width="64" height="64" aria-hidden="true">
+        <g transform="rotate(-9 60 60)">
+          <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="3"/>
+          <circle cx="60" cy="60" r="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 3"/>
+          <text x="60" y="57" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="14" font-weight="600" fill="currentColor" letter-spacing="1">ON TRACK</text>
+          <text x="60" y="74" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" fill="currentColor" letter-spacing="2">20 JUL 2026</text>
+        </g>
+      </svg>
+      <div class="status-copy">
+        <div class="eyebrow">Your tax position</div>
+        <h3>Nothing overdue</h3>
+        <p>Your VAT return is on schedule and one step is already done.</p>
+      </div>
+    </div>
+
+    <div class="cards-row">
+      <div class="action-card">
+        <div class="due">Due 7 Aug 2026</div>
+        <h3>VAT Return — Q2 2026</h3>
+        <div class="progress-dots">
+          <span class="done"></span><span class="done"></span><span></span><span></span>
+        </div>
+        <button class="btn-primary" onclick="goToWizard()">Continue guided review</button>
+      </div>
+      <div class="action-card">
+        <div class="due">Due 14 Sept 2026</div>
+        <h3>Confirmation statement</h3>
+        <div class="progress-dots">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <button class="btn-secondary" id="cs-btn" onclick="notReady(this)">Start</button>
+      </div>
+    </div>
+
+    <div class="ledger-list">
+      <h3>Recent activity</h3>
+      <div class="ledger-row">
+        <span class="idx num">01</span>
+        <div>
+          VAT Return — Q1 2026
+          <div class="desc-date">Filed 12 Apr 2026</div>
+        </div>
+        <span class="tag-filed"><span class="dot"></span>Filed</span>
+        <span></span>
+      </div>
+      <div class="ledger-row">
+        <span class="idx num">02</span>
+        <div>
+          Bank statement uploaded
+          <div class="desc-date">8 Jul 2026 · 214 transactions</div>
+        </div>
+        <span></span><span></span>
+      </div>
+      <div class="ledger-row">
+        <span class="idx num">03</span>
+        <div>
+          Confirmation statement
+          <div class="desc-date">Draft saved</div>
+        </div>
+        <button class="btn-text">Continue</button>
+        <span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- WIZARD -->
+  <div class="screen hidden" id="screen-wizard">
+    <button class="wizard-back" onclick="backToDashboard()">← Back to dashboard</button>
+
+    <div class="wizard-layout">
+      <nav class="ledger-rail" aria-label="Guided VAT return steps">
+        <ol id="rail">
+          <li class="rail-step" data-step="1"><span class="rail-marker">1</span><span class="rail-label">Connect your bank</span></li>
+          <li class="rail-step" data-step="2"><span class="rail-marker">2</span><span class="rail-label">Review your transactions</span></li>
+          <li class="rail-step" data-step="3"><span class="rail-marker">3</span><span class="rail-label">Check the figures</span></li>
+          <li class="rail-step" data-step="4"><span class="rail-marker">4</span><span class="rail-label">Submit to HMRC</span></li>
+        </ol>
+      </nav>
+
+      <div>
+        <!-- Step 1 -->
+        <div class="step-panel hidden" data-panel="1">
+          <div class="step-eyebrow">Step 1 of 4</div>
+          <h2>Let's get your numbers</h2>
+          <p class="lede">Connect your bank so we can pull in transactions automatically, or upload a statement if you'd rather do it manually.</p>
+
+          <div class="choice-card" id="choice-connect" onclick="selectChoice('connect')">
+            <span class="choice-radio"></span>
+            <div>
+              <div class="choice-title">Connect your bank account</div>
+              <div class="choice-sub">Takes about a minute. We'll pull in new transactions automatically every quarter.</div>
+            </div>
+          </div>
+          <div class="choice-card" id="choice-upload" onclick="selectChoice('upload')">
+            <span class="choice-radio"></span>
+            <div>
+              <div class="choice-title">Upload a statement instead</div>
+              <div class="choice-sub">Prefer to do it manually? Upload a PDF or CSV from your bank.</div>
+            </div>
+          </div>
+
+          <div class="step-nav">
+            <button class="btn-primary" id="step1-next" onclick="nextStep()" disabled>Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-panel hidden" data-panel="2">
+          <div class="step-eyebrow">Step 2 of 4</div>
+          <h2>Review your transactions</h2>
+          <p class="lede">We've sorted these automatically. Check anything we've flagged, then move on.</p>
+
+          <table class="txn-table">
+            <tr><th>Date</th><th>Description</th><th>Category</th><th></th></tr>
+            <tr>
+              <td class="num">04 Jul</td><td>Wholesale Flour Co.</td><td>Ingredients</td>
+              <td class="txn-amt num">−£186.40</td>
+            </tr>
+            <tr>
+              <td class="num">06 Jul</td><td>Square Card Fees</td><td>Bank &amp; card fees</td>
+              <td class="txn-amt num">−£24.10</td>
+            </tr>
+            <tr class="txn-flag">
+              <td class="num">09 Jul</td>
+              <td>
+                Office World Ltd
+                <div class="txn-flag-note">Not sure what this is — <a href="#" onclick="return false;">tell us</a></div>
+              </td>
+              <td>Uncategorised</td>
+              <td class="txn-amt num">−£58.00</td>
+            </tr>
+            <tr>
+              <td class="num">14 Jul</td><td>Thornfield Catering — invoice paid</td><td>Sales</td>
+              <td class="txn-amt num">£412.00</td>
+            </tr>
+          </table>
+
+          <div class="step-nav">
+            <button class="btn-secondary" onclick="prevStep()">Back</button>
+            <button class="btn-primary" onclick="nextStep()">Continue</button>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-panel hidden" data-panel="3">
+          <div class="step-eyebrow">Step 3 of 4</div>
+          <h2>Check the figures</h2>
+          <p class="lede">Here's what that works out to, in plain terms. Nothing is sent yet.</p>
+
+          <div class="vat-figures">
+            <div class="vat-row">
+              <span>VAT you charged customers<span class="label-sub">On sales this quarter</span></span>
+              <span class="num">£1,860.00</span>
+            </div>
+            <div class="vat-row">
+              <span>VAT you can reclaim<span class="label-sub">On purchases and expenses</span></span>
+              <span class="num">£612.40</span>
+            </div>
+            <div class="vat-row total">
+              <span>What you owe HMRC</span>
+              <span class="num">£1,247.60</span>
+            </div>
+          </div>
+
+          <div class="step-nav">
+            <button class="btn-secondary" onclick="prevStep()">Back</button>
+            <button class="btn-primary" onclick="nextStep()">Looks right, continue</button>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-panel hidden" data-panel="4">
+          <div id="step4-form">
+            <div class="step-eyebrow">Step 4 of 4</div>
+            <h2>Submit to HMRC</h2>
+            <p class="lede">You're submitting your Q2 2026 VAT return for Priya's Bakery. Once sent, HMRC will confirm receipt straight away.</p>
+            <div class="vat-figures">
+              <div class="vat-row total">
+                <span>Amount due</span>
+                <span class="num">£1,247.60</span>
+              </div>
+            </div>
+            <div class="step-nav">
+              <button class="btn-secondary" onclick="prevStep()">Back</button>
+              <button class="btn-primary" onclick="submitReturn()">Submit to HMRC</button>
+            </div>
+          </div>
+
+          <div class="submitted-view hidden" id="submitted-view">
+            <svg class="stamp-big stamp-animate" viewBox="0 0 120 120" width="88" height="88" aria-hidden="true">
+              <g transform="rotate(-9 60 60)">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="currentColor" stroke-width="3"/>
+                <circle cx="60" cy="60" r="44" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="2 3"/>
+                <text x="60" y="57" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="13" font-weight="600" fill="currentColor" letter-spacing="1">SUBMITTED</text>
+                <text x="60" y="74" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="8" fill="currentColor" letter-spacing="2">20 JUL 2026</text>
+              </g>
+            </svg>
+            <h2>Done — HMRC has it</h2>
+            <p>Confirmation reference sent to your email. Your next VAT return is due in October.</p>
+            <button class="btn-primary" onclick="backToDashboard()">Back to dashboard</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let currentStep = 1;
+  let bankChoice = null;
+
+  function renderRail() {
+    document.querySelectorAll('.rail-step').forEach(li => {
+      const s = parseInt(li.dataset.step, 10);
+      li.classList.remove('active', 'done');
+      if (s < currentStep) li.classList.add('done');
+      if (s === currentStep) li.classList.add('active');
+    });
+    document.querySelectorAll('.step-panel').forEach(p => {
+      p.classList.toggle('hidden', parseInt(p.dataset.panel, 10) !== currentStep);
+    });
+  }
+
+  function nextStep() {
+    if (currentStep < 4) { currentStep++; renderRail(); }
+  }
+  function prevStep() {
+    if (currentStep > 1) { currentStep--; renderRail(); }
+  }
+
+  function selectChoice(which) {
+    bankChoice = which;
+    document.getElementById('choice-connect').classList.toggle('selected', which === 'connect');
+    document.getElementById('choice-upload').classList.toggle('selected', which === 'upload');
+    document.getElementById('step1-next').disabled = false;
+  }
+
+  function goToWizard() {
+    document.getElementById('screen-dashboard').classList.add('hidden');
+    document.getElementById('screen-wizard').classList.remove('hidden');
+    currentStep = 2; // step 1 (connect bank) already completed per dashboard progress
+    renderRail();
+  }
+
+  function backToDashboard() {
+    document.getElementById('screen-wizard').classList.add('hidden');
+    document.getElementById('screen-dashboard').classList.remove('hidden');
+  }
+
+  function submitReturn() {
+    document.getElementById('step4-form').classList.add('hidden');
+    document.getElementById('submitted-view').classList.remove('hidden');
+  }
+
+  function notReady(btn) {
+    btn.textContent = 'Coming soon';
+    btn.disabled = true;
+  }
+
+  renderRail();
+</script>
