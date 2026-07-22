@@ -3,6 +3,7 @@ import { env } from "./config/env";
 import { healthRouter } from "./routes/health";
 import { hmrcRouter } from "./routes/hmrc";
 import { companiesHouseRouter } from "./routes/companies-house";
+import { vatRouter } from "./routes/vat";
 import { shopifyOAuthRouter } from "./routes/shopify/oauth";
 import { shopifyWebhooksRouter } from "./routes/shopify/webhooks";
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(healthRouter);
 app.use(hmrcRouter);
 app.use(companiesHouseRouter);
+app.use(vatRouter);
 app.use(shopifyOAuthRouter);
 
 app.listen(env.port, () => {

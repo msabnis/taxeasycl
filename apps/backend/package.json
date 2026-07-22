@@ -10,18 +10,27 @@
     "start": "node dist/index.js",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "lint": "eslint src --ext .ts"
+    "lint": "eslint src --ext .ts",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx src/db/migrate.ts",
+    "db:seed": "tsx src/db/seed.ts",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@ledgerly/shared": "*",
+    "@paralleldrive/cuid2": "^2.2.2",
     "dotenv": "^16.4.5",
-    "express": "^4.21.1"
+    "drizzle-orm": "^0.45.2",
+    "express": "^4.21.1",
+    "pg": "^8.13.1"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^22.9.0",
+    "@types/pg": "^8.11.10",
     "@typescript-eslint/eslint-plugin": "^8.14.0",
     "@typescript-eslint/parser": "^8.14.0",
+    "drizzle-kit": "^0.31.10",
     "eslint": "^8.57.1",
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { shopifyRawBodyParser } from "../../middleware/rawBody";
 import { verifyShopifyWebhookHmac } from "../../lib/shopifyAuth";
+import { deleteShopifyConnectionByShop } from "../../db/shopifyConnections";
 
 export const shopifyWebhooksRouter = Router();
 
@@ -40,24 +41,33 @@ shopifyWebhooksRouter.post("/shopify/webhooks", shopifyRawBodyParser, (req, res)
 
   switch (topic) {
     case "customers/data_request":
-      // TODO: gather any data we hold for this customer and return it to
-      // the merchant within 30 days.
+      // Ledgerly doesn't store Shopify customer PII (only shop-level
+      // connection + our own transaction records, which don't include
+      // customer identity fields) — nothing to gather here today, but
+      // revisit if order-level customer data is ever stored.
       // eslint-disable-next-line no-console
-      console.log(`[shopify][gdpr] data_request for ${shopDomain}`, payload);
+      console.log(`[shopify][gdpr] data_request for ${shopDomain} — no customer PII held`, payload);
       break;
 
     case "customers/redact":
-      // TODO: delete/redact this customer's data within 30 days, unless
-      // legally required to retain it (flagged as an open question in the
-      // setup guide re: HMRC's 6-year record-keeping rule).
+      // Same as above — no customer-level data to redact today.
       // eslint-disable-next-line no-console
-      console.log(`[shopify][gdpr] customers/redact for ${shopDomain}`, payload);
+      console.log(`[shopify][gdpr] customers/redact for ${shopDomain} — no customer PII held`, payload);
       break;
 
     case "shop/redact":
-      // TODO: erase all data for this shop from our database.
-      // eslint-disable-next-line no-console
-      console.log(`[shopify][gdpr] shop/redact for ${shopDomain}`, payload);
+      // Erase the persisted OAuth connection for this shop. Doesn't touch
+      // the merchant's other Ledgerly data (bank transactions, filings) —
+      // only what this integration itself stored.
+      deleteShopifyConnectionByShop(shopDomain)
+        .then((deleted) => {
+          // eslint-disable-next-line no-console
+          console.log(`[shopify][gdpr] shop/redact for ${shopDomain} — connection ${deleted ? "removed" : "not found"}`);
+        })
+        .catch((err) => {
+          // eslint-disable-next-line no-console
+          console.error(`[shopify][gdpr] shop/redact failed for ${shopDomain}`, err);
+        });
       break;
 
     case "orders/create":

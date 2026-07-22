@@ -16,6 +16,7 @@ export const env = {
   nodeEnv: process.env.NODE_ENV ?? "development",
   appUrl: required("APP_URL", "http://localhost:4000"),
   frontendUrl: required("FRONTEND_URL", "http://localhost:5173"),
+  databaseUrl: required("DATABASE_URL"),
 
   shopify: {
     apiKey: required("SHOPIFY_API_KEY"),

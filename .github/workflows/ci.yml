@@ -9,6 +9,25 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: ledgerly
+          POSTGRES_PASSWORD: ledgerly_ci
+          POSTGRES_DB: ledgerly
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://ledgerly:ledgerly_ci@localhost:5432/ledgerly
+
     steps:
       - uses: actions/checkout@v4
 
@@ -22,6 +41,9 @@ jobs:
 
       - name: Build shared package
         run: npm run build --workspace packages/shared
+
+      - name: Run DB migrations
+        run: npm run db:migrate --workspace apps/backend
 
       - name: Typecheck
         run: npm run typecheck
