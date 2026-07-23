@@ -1,72 +1,83 @@
-import { useState } from "react";
+import type { Filing } from "@ledgerly/shared";
 import { StatusHero } from "./StatusHero";
 import { ActionCard } from "./ActionCard";
 import { LedgerList } from "./LedgerList";
-import { merchant, currentPeriod } from "../data/mockData";
+import type { Merchant } from "../api/client";
 
 interface DashboardProps {
-  onContinueVatReturn: () => void;
+  merchant: Merchant;
+  filings: Filing[];
+  onContinueFiling: (filing: Filing) => void;
 }
 
-export function Dashboard({ onContinueVatReturn }: DashboardProps) {
-  const [confirmationStatementReady, setConfirmationStatementReady] = useState(true);
+const FILING_TYPE_LABELS: Record<Filing["type"], string> = {
+  vat_return: "VAT Return",
+  confirmation_statement: "Confirmation statement",
+  annual_accounts: "Annual accounts",
+};
+
+function formatDueDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
+
+function isOverdue(filing: Filing): boolean {
+  return filing.status !== "submitted" && new Date(filing.dueDate) < new Date();
+}
+
+export function Dashboard({ merchant, filings, onContinueFiling }: DashboardProps) {
+  const outstanding = filings.filter((f) => f.status !== "submitted");
+  const overdue = outstanding.filter(isOverdue);
+  const today = new Date().toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+  const firstName = merchant.name.split(/[\s']/)[0];
 
   return (
     <div className="screen">
       <div className="greeting-row">
-        <h1>Good morning, {merchant.contactFirstName}</h1>
-        <span className="date">Monday, 20 July 2026</span>
+        <h1>Good morning, {firstName}</h1>
+        <span className="date">{today}</span>
       </div>
 
       <StatusHero
-        headline="Nothing overdue"
-        detail="Your VAT return is on schedule and one step is already done."
-        asOfDate="20 JUL 2026"
+        headline={overdue.length > 0 ? "Something needs attention" : "Nothing overdue"}
+        detail={
+          overdue.length > 0
+            ? `${overdue.length} filing${overdue.length > 1 ? "s are" : " is"} past due — take a look below.`
+            : outstanding.length > 0
+              ? `Your next filing is ${FILING_TYPE_LABELS[outstanding[0].type]}, due ${formatDueDate(outstanding[0].dueDate)}.`
+              : "Everything's filed and up to date."
+        }
+        asOfDate={new Date().toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }).toUpperCase()}
       />
 
-      <div className="cards-row">
-        <ActionCard
-          due={currentPeriod.dueDate}
-          title={`VAT Return — ${currentPeriod.label}`}
-          stepsCompleted={1}
-          ctaLabel="Continue guided review"
-          onAction={onContinueVatReturn}
-        />
-        <ActionCard
-          due="14 Sept 2026"
-          title="Confirmation statement"
-          stepsCompleted={0}
-          ctaLabel={confirmationStatementReady ? "Start" : "Coming soon"}
-          ctaVariant="secondary"
-          disabled={!confirmationStatementReady}
-          onAction={() => setConfirmationStatementReady(false)}
-        />
-      </div>
+      {outstanding.length > 0 && (
+        <div className="cards-row">
+          {outstanding.map((filing) => (
+            <ActionCard
+              key={filing.id}
+              due={formatDueDate(filing.dueDate)}
+              title={FILING_TYPE_LABELS[filing.type]}
+              stepsCompleted={filing.stepsCompleted}
+              ctaLabel={filing.stepsCompleted > 0 ? "Continue guided review" : "Start"}
+              onAction={() => onContinueFiling(filing)}
+            />
+          ))}
+        </div>
+      )}
 
       <LedgerList
-        items={[
-          {
-            id: "a1",
-            index: "01",
-            description: "VAT Return — Q1 2026",
-            detail: "Filed 12 Apr 2026",
-            status: "filed",
-          },
-          {
-            id: "a2",
-            index: "02",
-            description: "Bank statement uploaded",
-            detail: "8 Jul 2026 · 214 transactions",
-            status: "none",
-          },
-          {
-            id: "a3",
-            index: "03",
-            description: "Confirmation statement",
-            detail: "Draft saved",
-            status: "continue",
-          },
-        ]}
+        items={filings.map((filing, i) => ({
+          id: filing.id,
+          index: String(i + 1).padStart(2, "0"),
+          description: FILING_TYPE_LABELS[filing.type],
+          detail:
+            filing.status === "submitted" && filing.submittedAt
+              ? `Filed ${formatDueDate(filing.submittedAt)}`
+              : filing.stepsCompleted > 0
+                ? "Draft saved"
+                : `Due ${formatDueDate(filing.dueDate)}`,
+          status: filing.status === "submitted" ? "filed" : "continue",
+          onContinue: () => onContinueFiling(filing),
+        }))}
       />
     </div>
   );

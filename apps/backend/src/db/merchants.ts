@@ -14,3 +14,12 @@ export async function findOrCreateMerchantByName(name: string) {
   const [created] = await db.insert(merchants).values({ name }).returning();
   return created;
 }
+
+/**
+ * TODO(auth): once real authentication exists, this goes away — the
+ * frontend should get "the current merchant" from the logged-in session,
+ * not by listing every merchant in the database.
+ */
+export async function listAllMerchants() {
+  return db.select().from(merchants);
+}

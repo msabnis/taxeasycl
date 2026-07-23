@@ -59,3 +59,17 @@ export async function insertTransactions(
 
   return rows.map(toSharedTransaction);
 }
+
+/** Resolves a flagged transaction — the "tell us" affordance in Step 2. */
+export async function updateTransactionCategory(
+  id: string,
+  category: Transaction["category"]
+): Promise<Transaction | null> {
+  const [row] = await db
+    .update(transactions)
+    .set({ category, needsReview: false })
+    .where(eq(transactions.id, id))
+    .returning();
+
+  return row ? toSharedTransaction(row) : null;
+}
